@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ar_museum_app/menu_buttons.dart';
+import 'package:ar_museum_app/pre_tour_screen.dart';
 
 class StartScreen extends StatelessWidget {
   const StartScreen({super.key, required this.onSelectScreen});
@@ -41,10 +42,22 @@ class StartScreen extends StatelessWidget {
                     ),
               ),
               MenuButton(
-                label: 'Pre Tour\t',
-                icon: Icons.video_camera_back,
-                onPressed: () => onSelectScreen('preTour'),
+                label: 'Pre Tour',
+                icon: Icons.play_circle_fill,
+                onPressed:
+                    () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder:
+                            (_) => PreTourScreen(
+                              onBack:
+                                  () =>
+                                      Navigator.pop(context), // חזרה למסך-הבית
+                            ),
+                      ),
+                    ),
               ),
+
               MenuButton(
                 label: 'Settings\t',
                 icon: Icons.settings,

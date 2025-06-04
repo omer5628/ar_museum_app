@@ -1,29 +1,80 @@
 import 'package:flutter/material.dart';
+import 'package:video_player/video_player.dart';
 
-class PreTourScreen extends StatelessWidget {
+class PreTourScreen extends StatefulWidget {
   const PreTourScreen({super.key, required this.onBack});
+  final VoidCallback onBack;
 
-  final VoidCallback onBack; // פונקציה שתחזיר למסך‑הבית
+  @override
+  State<PreTourScreen> createState() => _PreTourScreenState();
+}
+
+class _PreTourScreenState extends State<PreTourScreen> {
+  late VideoPlayerController _controller;
+  bool _showControls = true; // להצגת Play/Pause קטנים
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = VideoPlayerController.asset('assets/videos/intro.mp4')
+      ..initialize().then((_) => setState(() {}));
+    _controller.setLooping(true);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Text(
-            'Pre‑Tour',
-            style: TextStyle(color: Colors.white, fontSize: 28),
-          ),
-          const SizedBox(height: 20),
-          const Text(
-            'Here you can pick a tour, read tips, etc.',
-            textAlign: TextAlign.center,
-            style: TextStyle(color: Colors.white70),
-          ),
-          const SizedBox(height: 40),
-          ElevatedButton(onPressed: onBack, child: const Text('Back')),
-        ],
+    return Scaffold(
+      backgroundColor: Colors.black,
+      appBar: AppBar(
+        title: const Text('Pre Tour'),
+        leading: BackButton(onPressed: widget.onBack),
+      ),
+      body: Center(
+        child:
+            _controller.value.isInitialized
+                ? Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    AspectRatio(
+                      aspectRatio: _controller.value.aspectRatio,
+                      child: VideoPlayer(_controller),
+                    ),
+                    // כפתור Play / Pause שקוף
+                    if (_showControls)
+                      IconButton(
+                        iconSize: 64,
+                        color: Colors.white70,
+                        icon: Icon(
+                          _controller.value.isPlaying
+                              ? Icons.pause_circle
+                              : Icons.play_circle,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _controller.value.isPlaying
+                                ? _controller.pause()
+                                : _controller.play();
+                            _showControls = true;
+                          });
+                        },
+                      ),
+                    // הקשה על המסך מסתירה / מציגה כפתור
+                    Positioned.fill(
+                      child: GestureDetector(
+                        onTap:
+                            () =>
+                                setState(() => _showControls = !_showControls),
+                      ),
+                    ),
+                  ],
+                )
+                : const CircularProgressIndicator(),
       ),
     );
   }
