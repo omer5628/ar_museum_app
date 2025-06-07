@@ -1,8 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:provider/provider.dart';
+import 'package:ar_museum_app/providers/font_size_provider.dart';
 import 'package:ar_museum_app/app_screen.dart';
 
-void main() {
-  runApp(const MyApp());
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await EasyLocalization.ensureInitialized();
+
+  runApp(
+    EasyLocalization(
+      supportedLocales: const [Locale('en'), Locale('he'), Locale('ru')],
+      path: 'assets/translations',
+      fallbackLocale: const Locale('en'),
+      child: ChangeNotifierProvider(
+        // ← עטיפה ב-Provider
+        create: (_) => FontSizeNotifier(),
+        child: const MyApp(),
+      ),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -10,22 +27,25 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'WWII Museum AR',
-      theme: ThemeData(
-        scaffoldBackgroundColor: Colors.transparent, 
-        elevatedButtonTheme: ElevatedButtonThemeData(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xFF260266),
-            foregroundColor: Colors.white,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(40),
-            ),
-          ),
-        ),
-      ),
-      home: const AppScreen(),
+    return Consumer<FontSizeNotifier>(
+      builder: (context, fontSize, _) {
+        return MaterialApp(
+          debugShowCheckedModeBanner: false,
+          title: tr('appTitle'),
+          locale: context.locale,
+          supportedLocales: context.supportedLocales,
+          localizationsDelegates: context.localizationDelegates,
+          builder:
+              (ctx, child) => MediaQuery(
+                // ⬅️ הזרקת textScale
+                data: MediaQuery.of(
+                  ctx,
+                ).copyWith(textScaleFactor: fontSize.scale),
+                child: child!,
+              ),
+          home: const AppScreen(),
+        );
+      },
     );
   }
 }

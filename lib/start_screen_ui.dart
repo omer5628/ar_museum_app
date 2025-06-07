@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:ar_museum_app/menu_buttons.dart';
 import 'package:ar_museum_app/pre_tour_screen.dart';
 
@@ -6,43 +7,48 @@ class StartScreen extends StatelessWidget {
   const StartScreen({super.key, required this.onSelectScreen});
 
   final void Function(String) onSelectScreen;
+
   @override
-  Widget build(context) {
+  Widget build(BuildContext context) {
     return Stack(
       alignment: Alignment.center,
       children: [
-        // --- רקע הלוגו --- //
+        // --- רקע לוגו שקוף --- //
         Opacity(
-          opacity: 0.15, // שקיפות ‑ שנה כרצונך
+          opacity: 0.15,
           child: Image.asset(
             'assets/images/logo2.png',
             fit: BoxFit.contain,
-            width: MediaQuery.of(context).size.width * 0.95, // 80 % מרוחב המסך
+            width: MediaQuery.of(context).size.width * 0.8,
           ),
         ),
 
-        // --- תוכן האפליקציה --- //
+        // --- תוכן --- //
         Center(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Text(
-                'Jewish Warrior Museum',
-                style: TextStyle(color: Colors.white, fontSize: 32),
+              const SizedBox(height: 80),
+              Text(
+                tr('appTitle'), // כותרת מתורגמת
+                textAlign: TextAlign.center,
+                style: const TextStyle(color: Colors.white, fontSize: 32),
               ),
               const SizedBox(height: 400),
 
               // ---- כפתור Scanner ----
               MenuButton(
-                label: 'Scanner\t',
+                label: tr('scanner'),
                 icon: Icons.camera_alt,
                 onPressed:
                     () => ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(content: Text('Coming soon…')),
                     ),
               ),
+
+              // ---- כפתור Pre Tour ----
               MenuButton(
-                label: 'Pre Tour',
+                label: tr('preTour'),
                 icon: Icons.play_circle_fill,
                 onPressed:
                     () => Navigator.push(
@@ -50,22 +56,23 @@ class StartScreen extends StatelessWidget {
                       MaterialPageRoute(
                         builder:
                             (_) => PreTourScreen(
-                              onBack:
-                                  () =>
-                                      Navigator.pop(context), // חזרה למסך-הבית
+                              onBack: () => Navigator.pop(context),
                             ),
                       ),
                     ),
               ),
 
+              // ---- כפתור Settings ----
               MenuButton(
-                label: 'Settings\t',
+                label: tr('settings'),
                 icon: Icons.settings,
                 onPressed: () => onSelectScreen('settings'),
               ),
+
+              // ---- כפתור About ----
               MenuButton(
-                label: 'About us\t',
-                icon: Icons.question_mark,
+                label: tr('about'),
+                icon: Icons.info_outline,
                 onPressed: () => onSelectScreen('aboutUs'),
               ),
             ],

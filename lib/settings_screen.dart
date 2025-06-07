@@ -1,112 +1,165 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:provider/provider.dart';
+import 'package:ar_museum_app/providers/font_size_provider.dart';
 import 'package:ar_museum_app/settings_title.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key, required this.onBack});
-
   final VoidCallback onBack;
+
+  static const _langMap = {'en': 'English', 'he': 'עברית', 'ru': 'Русский'};
 
   @override
   Widget build(BuildContext context) {
-    
-    String language = 'English';
-    String textSize = 'Medium';
-    String themeMode = 'Light';
+    final currCode = context.locale.languageCode;
+    final currDisplay = _langMap[currCode] ?? 'English';
+    final fontProv = context.watch<FontSizeNotifier>();
 
     return Scaffold(
-      backgroundColor: Colors.white, 
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              
               const SizedBox(height: 12),
-              const Text('Settings',
-                  style: TextStyle(fontSize: 36, fontWeight: FontWeight.bold)),
+              Text(
+                tr('settings'),
+                style: const TextStyle(
+                  fontSize: 36,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
               const SizedBox(height: 12),
               const Divider(),
 
-              
+              // Language
               SettingsTile(
-                label: 'Language',
-                child: _buildDropdown<String>(
-                  value: language,
-                  items: const ['English', 'עברית','Русский'],
-                  onChanged: (v) {},
+                trKey: 'language',
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 150),
+                  child: DropdownButtonFormField<String>(
+                    value: currDisplay,
+                    isExpanded: true,
+                    decoration: InputDecoration(
+                      isDense: true,
+                      contentPadding: const EdgeInsets.symmetric(
+                        vertical: 8,
+                        horizontal: 12,
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    items:
+                        _langMap.values
+                            .map(
+                              (e) => DropdownMenuItem(
+                                value: e,
+                                child: Text(
+                                  e,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            )
+                            .toList(),
+                    onChanged: (v) {
+                      if (v == null) return;
+                      final code =
+                          _langMap.entries
+                              .firstWhere((entry) => entry.value == v)
+                              .key;
+                      context.setLocale(Locale(code));
+                    },
+                  ),
                 ),
               ),
 
-              
+              // Text Size
               SettingsTile(
-                label: 'Text Size',
-                child: _buildDropdown<String>(
-                  value: textSize,
-                  items: const ['Small', 'Medium', 'Large'],
-                  onChanged: (v) {},
+                trKey: 'textSize',
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 150),
+                  child: DropdownButtonFormField<String>(
+                    value: fontProv.scale == 1.3 ? 'Large' : 'Medium',
+                    isExpanded: true,
+                    decoration: InputDecoration(
+                      isDense: true,
+                      contentPadding: const EdgeInsets.symmetric(
+                        vertical: 8,
+                        horizontal: 12,
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    items: [
+                      DropdownMenuItem(
+                        value: 'Medium',
+                        child: Text(
+                          tr('Medium'),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      DropdownMenuItem(
+                        value: 'Large',
+                        child: Text(
+                          tr('Large'),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
+                    onChanged: (v) {
+                      if (v == 'Large') {
+                        context.read<FontSizeNotifier>().setLarge();
+                      } else {
+                        context.read<FontSizeNotifier>().setMedium();
+                      }
+                    },
+                  ),
                 ),
               ),
 
-              
+              // Help
               SettingsTile(
-                label: 'Screen',
-                child: _buildDropdown<String>(
-                  value: themeMode,
-                  items: const ['Light', 'Dark'],
-                  onChanged: (v) {},
-                ),
-              ),
-
-              // --- שורה: Help --- //
-              SettingsTile(
-                label: 'Help',
-                child: OutlinedButton(
-                  onPressed: () {}, // TODO: open help dialog
-                  child: const Text('Click for help'),
-                ),
-              ),
-
-              // --- שורה: About us --- //
-              SettingsTile(
-                label: 'About us',
-                child: OutlinedButton(
-                  onPressed: () {}, // TODO: navigate to About screen
-                  child: const Text('Click for more information\nabout the museum',
-                      textAlign: TextAlign.center),
+                trKey: 'help',
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 150),
+                  child: OutlinedButton(
+                    style: OutlinedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 8,
+                        horizontal: 12,
+                      ),
+                      minimumSize: Size.zero,
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    ),
+                    onPressed: () {},
+                    child: Text(
+                      tr('How does it work?'),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
                 ),
               ),
 
               const Spacer(),
               Center(
-                child: ElevatedButton(onPressed: onBack, child: const Text('Back')),
+                child: ElevatedButton(
+                  onPressed: onBack,
+                  child: const Text('Back'),
+                ),
               ),
               const SizedBox(height: 20),
             ],
           ),
         ),
       ),
-    );
-  }
-
-  /// Dropdown מוכן לשימוש חוזר
-  Widget _buildDropdown<T>({
-    required T value,
-    required List<T> items,
-    required void Function(T?) onChanged,
-  }) {
-    return DropdownButtonFormField<T>(
-      value: value,
-      isExpanded: true,
-      decoration: InputDecoration(
-        contentPadding:
-            const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-      ),
-      items: items
-          .map((e) => DropdownMenuItem<T>(value: e, child: Text(e.toString())))
-          .toList(),
-      onChanged: onChanged,
     );
   }
 }

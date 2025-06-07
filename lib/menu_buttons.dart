@@ -6,17 +6,19 @@ class MenuButton extends StatelessWidget {
     required this.label,
     required this.onPressed,
     this.fontSize = 16,
-    this.icon,                           // ⬅️ אייקון אופציונלי חדש
+    this.icon, // אייקון אופציונלי
     this.iconSize = 20,
     this.iconColor,
+    this.iconSpacing = 10, // ← רווח בין אייקון לטקסט
   });
 
   final String label;
   final VoidCallback onPressed;
-  final double fontSize;  
-  final IconData? icon;                  // יכול להיות null
-  final double iconSize; 
-  final Color? iconColor;   
+  final double fontSize;
+  final IconData? icon;
+  final double iconSize;
+  final Color? iconColor;
+  final double iconSpacing;
 
   @override
   Widget build(BuildContext context) {
@@ -34,23 +36,23 @@ class MenuButton extends StatelessWidget {
               borderRadius: BorderRadius.circular(40),
             ),
           ),
-          child: icon == null
-              ? Text(label, style: TextStyle(fontSize: fontSize))
-              : Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const SizedBox(width: 8),
-                    Text(label, style: TextStyle(fontSize: fontSize)),
-                    Icon(
-                      icon,
-                      size: iconSize,
-                      color: iconColor ?? Colors.white, // ⬅️ צבע מפורש
-                    ),
-                  ],
-                ),
+          child:
+              icon == null
+                  ? Text(label, style: TextStyle(fontSize: fontSize))
+                  : Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        icon,
+                        size: iconSize,
+                        color: iconColor ?? Colors.white,
+                      ),
+                      SizedBox(width: iconSpacing), // רווח גדול יותר
+                      Text(label, style: TextStyle(fontSize: fontSize)),
+                    ],
+                  ),
         ),
       ),
     );
   }
 }
-
