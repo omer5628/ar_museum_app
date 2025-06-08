@@ -13,6 +13,22 @@
   "clickForHelp": "Click for help",
   "clickForInfo": "Click for more information about the museum",
   "Medium": "Medium",
-  "Large": "Large"
+  "Large": "Large",
+  "welcomeTitle": "Welcome!",
+  "welcomeMessage": "This app lets you scan artifacts in AR,\nview a pre-tour video,\nand read more information about each exhibit.",
+  "gotIt": "Got it!",
+  "help": "Help",
+  "howItWorks": "How does it work?",
+  "aboutTitle": "About the Museum",
+  "aboutIntro": "The Jewish Warrior Museum tells the story of Jewish fighters in WWII. Explore their courage and legacy through this AR experience.",
+  "aboutContact": "Visit our website",
+  "aboutWebsite": "Go to museum website",
+  "welcomeTitle": "Welcome!",
+  "welcomeMessage": "This app lets you scan artifacts in AR,\nview a pre-tour video,\nand read more information about each exhibit.",
+  "howItWorks": "How does it work?",
+  "stepOne": "Step one: Press the scanner button",
+  "stepTwo": "Step two: Take a picture of a representation inside the museum (Note: Only take pictures of physical representations in the museum, not pictures of people or inside the videos)",
+  "stepThree": "Step three: Touch the information screen about the exhibit you took",
+  "gotIt": "Got it!"
 }
 
