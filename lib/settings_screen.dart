@@ -3,6 +3,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:provider/provider.dart';
 import 'package:ar_museum_app/providers/font_size_provider.dart';
 import 'package:ar_museum_app/settings_title.dart';
+import 'package:ar_museum_app/help_dialog.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key, required this.onBack});
@@ -14,7 +15,6 @@ class SettingsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final currCode = context.locale.languageCode;
     final currDisplay = _langMap[currCode] ?? 'English';
-    final fontProv = context.watch<FontSizeNotifier>();
 
     return Scaffold(
       body: SafeArea(
@@ -31,7 +31,6 @@ class SettingsScreen extends StatelessWidget {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              const SizedBox(height: 12),
               const Divider(),
 
               // Language
@@ -40,10 +39,9 @@ class SettingsScreen extends StatelessWidget {
                 child: ConstrainedBox(
                   constraints: const BoxConstraints(maxWidth: 150),
                   child: DropdownButtonFormField<String>(
+                    isDense: true,
                     value: currDisplay,
-                    isExpanded: true,
                     decoration: InputDecoration(
-                      isDense: true,
                       contentPadding: const EdgeInsets.symmetric(
                         vertical: 8,
                         horizontal: 12,
@@ -68,9 +66,7 @@ class SettingsScreen extends StatelessWidget {
                     onChanged: (v) {
                       if (v == null) return;
                       final code =
-                          _langMap.entries
-                              .firstWhere((entry) => entry.value == v)
-                              .key;
+                          _langMap.entries.firstWhere((e) => e.value == v).key;
                       context.setLocale(Locale(code));
                     },
                   ),
@@ -83,10 +79,12 @@ class SettingsScreen extends StatelessWidget {
                 child: ConstrainedBox(
                   constraints: const BoxConstraints(maxWidth: 150),
                   child: DropdownButtonFormField<String>(
-                    value: fontProv.scale == 1.3 ? 'Large' : 'Medium',
-                    isExpanded: true,
+                    isDense: true,
+                    value:
+                        context.read<FontSizeNotifier>().scale == 1.3
+                            ? 'Large'
+                            : 'Medium',
                     decoration: InputDecoration(
-                      isDense: true,
                       contentPadding: const EdgeInsets.symmetric(
                         vertical: 8,
                         horizontal: 12,
@@ -95,41 +93,29 @@ class SettingsScreen extends StatelessWidget {
                         borderRadius: BorderRadius.circular(8),
                       ),
                     ),
-                    items: [
-                      DropdownMenuItem(
-                        value: 'Medium',
-                        child: Text(
-                          tr('Medium'),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                      DropdownMenuItem(
-                        value: 'Large',
-                        child: Text(
-                          tr('Large'),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
+                    items: const [
+                      DropdownMenuItem(value: 'Medium', child: Text('Medium')),
+                      DropdownMenuItem(value: 'Large', child: Text('Large')),
                     ],
                     onChanged: (v) {
-                      if (v == 'Large') {
-                        context.read<FontSizeNotifier>().setLarge();
-                      } else {
-                        context.read<FontSizeNotifier>().setMedium();
-                      }
+                      final provider = context.read<FontSizeNotifier>();
+                      if (v == 'Large')
+                        provider.setLarge();
+                      else
+                        provider.setMedium();
                     },
                   ),
                 ),
               ),
 
-              // Help
+              // How does it work? popup
               SettingsTile(
                 trKey: 'help',
                 child: ConstrainedBox(
                   constraints: const BoxConstraints(maxWidth: 150),
                   child: OutlinedButton(
+                    onPressed:
+                        () => showHelpDialog(context), // מפנה לאותו דיאלוג
                     style: OutlinedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(
                         vertical: 8,
@@ -138,9 +124,8 @@ class SettingsScreen extends StatelessWidget {
                       minimumSize: Size.zero,
                       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                     ),
-                    onPressed: () {},
                     child: Text(
-                      tr('How does it work?'),
+                      tr('howItWorks'), // התווית – How does it work?
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),

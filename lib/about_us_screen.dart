@@ -1,41 +1,61 @@
+// lib/about_us_screen.dart
+
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:ar_museum_app/menu_buttons.dart';
 
 class AboutUsScreen extends StatelessWidget {
   const AboutUsScreen({super.key, required this.onBack});
+
   final VoidCallback onBack;
 
-  Future<void> _launchWebsite(BuildContext ctx) async {
-    final uri = Uri.parse('https://www.jwmww2.org/');
-    if (await canLaunchUrl(uri)) {
-      // פותח בדפדפן חיצוני (Chrome וכו’)
-      await launchUrl(uri, mode: LaunchMode.externalApplication);
-    } else {
-      // גיבוי – WebView פנימי (אם אין דפדפן במכשיר)
-      await launchUrl(uri, mode: LaunchMode.inAppWebView);
+  Future<void> _launchWebsite() async {
+    const url = 'https://www.jwmww2.org/';
+    final uri = Uri.parse(url);
+    if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
+      ScaffoldMessenger.of(
+        onBack as BuildContext,
+      ).showSnackBar(const SnackBar(content: Text('Could not launch website')));
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Text(
-            'About the Museum',
-            style: TextStyle(color: Colors.white, fontSize: 28),
-          ),
-          const SizedBox(height: 20),
-          MenuButton(
-            label: 'Visit Museum Website',
-            icon: Icons.public, // אופציונלי
-            onPressed: () => _launchWebsite(context),
-          ),
-          const SizedBox(height: 40),
-          ElevatedButton(onPressed: onBack, child: const Text('Back')),
-        ],
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(tr('aboutTitle')),
+        leading: BackButton(onPressed: onBack),
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              tr('aboutTitle'),
+              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 12),
+            Text(tr('aboutIntro'), style: const TextStyle(fontSize: 16)),
+            const SizedBox(height: 24),
+            Text(
+              tr('aboutContact'),
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 8),
+            GestureDetector(
+              onTap: _launchWebsite,
+              child: Text(
+                tr('aboutWebsite'),
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Theme.of(context).colorScheme.primary,
+                  decoration: TextDecoration.underline,
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
