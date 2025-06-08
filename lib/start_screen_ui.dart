@@ -40,10 +40,7 @@ class StartScreen extends StatelessWidget {
               MenuButton(
                 label: tr('scanner'),
                 icon: Icons.camera_alt,
-                onPressed:
-                    () => ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Coming soon…')),
-                    ),
+                onPressed: () => onSelectScreen('scanner'),
               ),
 
               // ---- כפתור Pre Tour ----
