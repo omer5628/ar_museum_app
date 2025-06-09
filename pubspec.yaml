@@ -30,15 +30,14 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-
-  # ספריות עיקריות
   tflite_flutter: ^0.11.0
-  image: ^4.1.7        # For image preprocessing
+  image: ^4.1.7        
   camera: ^0.10.0+4
   provider: ^6.0.5
   easy_localization: ^3.0.7+1
   url_launcher: ^6.3.1
   cupertino_icons: ^1.0.8
+  path_provider: ^2.1.2
 
   # לִינְטִים ו-בדיקות
   flutter_lints: ^5.0.0
