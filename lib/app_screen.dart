@@ -4,6 +4,7 @@ import 'package:ar_museum_app/start_screen_ui.dart';
 import 'package:ar_museum_app/settings_screen.dart';
 import 'package:ar_museum_app/about_us_screen.dart';
 import 'package:ar_museum_app/help_dialog.dart';
+import 'package:ar_museum_app/scanner_screen.dart';
 
 class AppScreen extends StatefulWidget {
   const AppScreen({super.key});
@@ -67,6 +68,9 @@ class _AppScreenState extends State<AppScreen> {
   Widget build(BuildContext context) {
     Widget bodyWidget;
     switch (_active) {
+      case 'scanner':
+        bodyWidget = ScannerScreen(onBack: () => _onSelect('home'));
+        break;
       case 'settings':
         bodyWidget = SettingsScreen(onBack: () => _onSelect('home'));
         break;

@@ -1,123 +1,108 @@
-import 'dart:io';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:path/path.dart' as p;
+import 'package:ar_museum_app/utils/tflite_helper.dart';
 
 class ScannerScreen extends StatefulWidget {
   final VoidCallback onBack;
 
-  const ScannerScreen({Key? key, required this.onBack}) : super(key: key);
+  const ScannerScreen({super.key, required this.onBack});
 
   @override
-  _ScannerScreenState createState() => _ScannerScreenState();
+  State<ScannerScreen> createState() => _ScannerScreenState();
 }
 
 class _ScannerScreenState extends State<ScannerScreen> {
-  late CameraController _controller;
-  late Future<void> _initializeControllerFuture;
-  bool _isBusy = false;
-  File? _capturedImage;
+  CameraController? _controller;
+  List<CameraDescription>? _cameras;
+  bool _isCameraInitialized = false;
 
   @override
   void initState() {
     super.initState();
     _initializeCamera();
+    TFLiteHelper.loadModel(); // Load model once
   }
 
   Future<void> _initializeCamera() async {
-    final cameras = await availableCameras();
-    final backCam = cameras.firstWhere((cam) => cam.lensDirection == CameraLensDirection.back);
-    _controller = CameraController(backCam, ResolutionPreset.medium);
-    _initializeControllerFuture = _controller.initialize();
-    setState(() {});
+    _cameras = await availableCameras();
+    final backCamera = _cameras!.firstWhere(
+      (camera) => camera.lensDirection == CameraLensDirection.back,
+    );
+
+    _controller = CameraController(
+      backCamera,
+      ResolutionPreset.high,
+      enableAudio: false,
+    );
+
+    await _controller!.initialize();
+
+    if (!mounted) return;
+
+    setState(() {
+      _isCameraInitialized = true;
+    });
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    _controller?.dispose();
     super.dispose();
   }
 
   Future<void> _takePicture() async {
-    if (_isBusy) return;
+    if (!_controller!.value.isInitialized || _controller!.value.isTakingPicture) return;
 
-    try {
-      setState(() => _isBusy = true);
-      await _initializeControllerFuture;
+    final image = await _controller!.takePicture();
+    print('Image path: ${image.path}');
 
-      final tempDir = await getTemporaryDirectory();
-      final filePath = p.join(tempDir.path, '${DateTime.now().millisecondsSinceEpoch}.jpg');
+    final prediction = await TFLiteHelper.runModelOnImage(image.path);
+    print('Prediction: $prediction');
 
-      XFile picture = await _controller.takePicture();
-      final imageFile = File(picture.path);
-
-      setState(() {
-        _capturedImage = imageFile;
-      });
-    } catch (e) {
-      print('Error taking picture: $e');
-    } finally {
-      setState(() => _isBusy = false);
-    }
+    // TODO: Navigate to exhibit details page with `prediction`
   }
+
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Scanner'),
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back),
-          onPressed: widget.onBack,
-        ),
-      ),
-      body: FutureBuilder(
-        future: _initializeControllerFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.done) {
-            return _capturedImage == null
-                ? Stack(
-                    children: [
-                      CameraPreview(_controller),
-                      Positioned(
-                        bottom: 20,
-                        left: 0,
-                        right: 0,
-                        child: Center(
-                          child: ElevatedButton(
-                            onPressed: _isBusy ? null : _takePicture,
-                            child: _isBusy
-                                ? CircularProgressIndicator(color: Colors.white)
-                                : Text('Take Picture'),
-                          ),
-                        ),
-                      ),
-                    ],
-                  )
-                : Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Image.file(_capturedImage!),
-                        SizedBox(height: 20),
-                        ElevatedButton(
-                          onPressed: () {
-                            setState(() => _capturedImage = null);
-                          },
-                          child: Text('Retake'),
-                        ),
-                        ElevatedButton(
-                          onPressed: widget.onBack,
-                          child: Text('Back to Main'),
-                        ),
-                      ],
-                    ),
-                  );
-          } else {
-            return Center(child: CircularProgressIndicator());
-          }
-        },
+      backgroundColor: Colors.black,
+      body: Stack(
+        children: [
+          if (_isCameraInitialized)
+            CameraPreview(_controller!)
+          else
+            const Center(child: CircularProgressIndicator()),
+
+          Positioned(
+            top: 40,
+            left: 20,
+            child: IconButton(
+              icon: const Icon(Icons.arrow_back, color: Colors.white),
+              onPressed: widget.onBack,
+            ),
+          ),
+
+          Positioned(
+            bottom: 40,
+            left: 0,
+            right: 0,
+            child: Center(
+              child: GestureDetector(
+                onTap: _takePicture,
+                child: Container(
+                  width: 70,
+                  height: 70,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Colors.white.withOpacity(0.9),
+                    border: Border.all(color: Colors.white, width: 2),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
