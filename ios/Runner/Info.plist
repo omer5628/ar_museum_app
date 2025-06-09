@@ -46,6 +46,8 @@
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>NSCameraUsageDescription</key>
-	<string>This app requires camera access to scan exhibits.</string>
+	<string>This app uses the camera to identify museum exhibits.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>This app does not record audio, but the system requires this permission for camera initialization.</string>
 </dict>
 </plist>
