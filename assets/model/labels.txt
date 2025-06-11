@@ -1,13 +1,13 @@
 Canteen
 Carbine_Gun
 Compass
-Fight_jett
+Fighter_jett
 Food_Ration_Soviet
 Handgun_With_Bullets
 Hannah_Szenes
 Hannah_Szenes_original_typewriter
-Hebrew_Yeshov_Fighter_First_Obj
-Hebrew_Yeshov_Fighter_Sec_Obj
+Bayonet
+Commando Knife
 Herman_Fredrick_kisch
 Herman_Friedrick_Kisch_sword
 Hero_Of_Soviet_Union_Medal

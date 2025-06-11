@@ -1,6 +1,8 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:ar_museum_app/utils/tflite_helper.dart';
+import 'package:ar_museum_app/Artifact_info_page.dart';
+import 'package:ar_museum_app/utils/description_loader.dart';
 
 class ScannerScreen extends StatefulWidget {
   final VoidCallback onBack;
@@ -52,16 +54,24 @@ class _ScannerScreenState extends State<ScannerScreen> {
 
   Future<void> _takePicture() async {
     if (!_controller!.value.isInitialized || _controller!.value.isTakingPicture) return;
+      final image = await _controller!.takePicture();
+      print('Image path: ${image.path}');
 
-    final image = await _controller!.takePicture();
-    print('Image path: ${image.path}');
+      final prediction = await TFLiteHelper.runModelOnImage(image.path);
+      print('Prediction: $prediction');
 
-    final prediction = await TFLiteHelper.runModelOnImage(image.path);
-    print('Prediction: $prediction');
+      if (prediction.isNotEmpty && mounted) {
+        final description = await DescriptionLoader.loadDescription(prediction);
 
-    // TODO: Navigate to exhibit details page with `prediction`
-  }
-
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => ArtifactInfoPage(artifactName: prediction),
+          ),
+        );
+      }
+    }
+  
 
   @override
   Widget build(BuildContext context) {
