@@ -3,6 +3,7 @@ import 'package:video_player/video_player.dart';
 
 class PreTourScreen extends StatefulWidget {
   const PreTourScreen({super.key, required this.onBack});
+
   final VoidCallback onBack;
 
   @override
@@ -11,20 +12,30 @@ class PreTourScreen extends StatefulWidget {
 
 class _PreTourScreenState extends State<PreTourScreen> {
   late VideoPlayerController _controller;
-  bool _showControls = true; // להצגת Play/Pause קטנים
 
   @override
   void initState() {
     super.initState();
-    _controller = VideoPlayerController.asset('assets/videos/intro.mp4')
-      ..initialize().then((_) => setState(() {}));
-    _controller.setLooping(true);
+    _controller =
+        VideoPlayerController.asset('assets/videos/intro.mp4')
+          ..setLooping(true)
+          ..initialize().then((_) {
+            setState(() {}); // לעדכן כשמוכן
+            _controller.play(); // מתחיל אוטומטית
+          });
   }
 
   @override
   void dispose() {
     _controller.dispose();
     super.dispose();
+  }
+
+  String _formatDuration(Duration d) {
+    String twoDigits(int n) => n.toString().padLeft(2, '0');
+    final minutes = twoDigits(d.inMinutes.remainder(60));
+    final seconds = twoDigits(d.inSeconds.remainder(60));
+    return '$minutes:$seconds';
   }
 
   @override
@@ -38,39 +49,53 @@ class _PreTourScreenState extends State<PreTourScreen> {
       body: Center(
         child:
             _controller.value.isInitialized
-                ? Stack(
-                  alignment: Alignment.center,
+                ? Column(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    AspectRatio(
-                      aspectRatio: _controller.value.aspectRatio,
-                      child: VideoPlayer(_controller),
-                    ),
-                    // כפתור Play / Pause שקוף
-                    if (_showControls)
-                      IconButton(
-                        iconSize: 64,
-                        color: Colors.white70,
-                        icon: Icon(
+                    // 1. הווידאו עצמו
+                    GestureDetector(
+                      onTap: () {
+                        setState(() {
                           _controller.value.isPlaying
-                              ? Icons.pause_circle
-                              : Icons.play_circle,
+                              ? _controller.pause()
+                              : _controller.play();
+                        });
+                      },
+                      child: AspectRatio(
+                        aspectRatio: _controller.value.aspectRatio,
+                        child: VideoPlayer(_controller),
+                      ),
+                    ),
+
+                    const SizedBox(height: 12),
+
+                    // 2. שורה של זמן נוכחי / כולל
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          _formatDuration(_controller.value.position),
+                          style: const TextStyle(color: Colors.white),
                         ),
-                        onPressed: () {
-                          setState(() {
-                            _controller.value.isPlaying
-                                ? _controller.pause()
-                                : _controller.play();
-                            _showControls = true;
-                          });
-                        },
-                      ),
-                    // הקשה על המסך מסתירה / מציגה כפתור
-                    Positioned.fill(
-                      child: GestureDetector(
-                        onTap:
-                            () =>
-                                setState(() => _showControls = !_showControls),
-                      ),
+                        const SizedBox(width: 8),
+                        SizedBox(
+                          width: 200,
+                          child: VideoProgressIndicator(
+                            _controller,
+                            allowScrubbing: true,
+                            colors: VideoProgressColors(
+                              playedColor: Colors.purpleAccent,
+                              backgroundColor: Colors.white24,
+                              bufferedColor: Colors.white38,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          _formatDuration(_controller.value.duration),
+                          style: const TextStyle(color: Colors.white),
+                        ),
+                      ],
                     ),
                   ],
                 )
