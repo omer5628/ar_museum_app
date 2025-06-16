@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -20,53 +21,47 @@ class _ArtifactInfoPageState extends State<ArtifactInfoPage> {
   }
 
   Future<void> loadArtifactDescription() async {
-    print("[DEBUG] Loading artifact description for: ${widget.artifactName}");
+    final languageCode = Localizations.localeOf(context).languageCode;
+    final path = 'assets/translations/$languageCode.json';
 
-    final rawData = await rootBundle.loadString('assets/information_pages/info_en.txt');
-    print("[DEBUG] Raw data loaded successfully.");
+    try {
+      final jsonString = await rootBundle.loadString(path);
+      final Map<String, dynamic> data = json.decode(jsonString);
 
-    final lines = rawData.split('\n');
+      // Assuming your descriptions are inside an "artifacts" key:
+      final Map<String, dynamic>? artifacts = data['artifacts'];
+      final desc = artifacts != null && artifacts.containsKey(widget.artifactName)
+          ? artifacts[widget.artifactName]
+          : 'Description not found.';
 
-    for (final line in lines) {
-      final trimmedLine = line.trim();
-      if (trimmedLine.isEmpty) continue;
-
-      print("[DEBUG] Checking line: $trimmedLine");
-
-      if (trimmedLine.startsWith('${widget.artifactName.trim()}:')) {
-        final index = trimmedLine.indexOf(':');
-        if (index != -1 && index < trimmedLine.length - 1) {
-          final result = trimmedLine.substring(index + 1).trim();
-          print("[DEBUG] Match found. Description: $result");
-
-          setState(() {
-            description = result;
-          });
-        }
-        return;
-      }
+      setState(() {
+        description = desc;
+      });
+    } catch (e) {
+      setState(() {
+        description = 'Failed to load description.';
+      });
     }
-
-    print("[DEBUG] No match found. Showing fallback.");
-    setState(() {
-      description = 'Description not found.';
-    });
   }
-
-
 
   @override
   Widget build(BuildContext context) {
+    final isRTL = Localizations.localeOf(context).languageCode == 'he';
+
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.artifactName),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: SingleChildScrollView(
-          child: Text(
-            description,
-            style: const TextStyle(fontSize: 16),
+        child: Directionality(
+          textDirection: isRTL ? TextDirection.rtl : TextDirection.ltr,
+          child: SingleChildScrollView(
+            child: Text(
+              description,
+              style: const TextStyle(fontSize: 16),
+              textAlign: isRTL ? TextAlign.right : TextAlign.left,
+            ),
           ),
         ),
       ),

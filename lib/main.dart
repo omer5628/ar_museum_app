@@ -14,7 +14,6 @@ Future<void> main() async {
       path: 'assets/translations',
       fallbackLocale: const Locale('en'),
       child: ChangeNotifierProvider(
-        // ← עטיפה ב-Provider
         create: (_) => FontSizeNotifier(),
         child: const MyApp(),
       ),
@@ -37,7 +36,6 @@ class MyApp extends StatelessWidget {
           localizationsDelegates: context.localizationDelegates,
           builder:
               (ctx, child) => MediaQuery(
-                // ⬅️ הזרקת textScale
                 data: MediaQuery.of(
                   ctx,
                 ).copyWith(textScaleFactor: fontSize.scale),
