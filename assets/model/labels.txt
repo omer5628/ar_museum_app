@@ -7,7 +7,7 @@ Handgun_With_Bullets
 Hannah_Szenes
 Hannah_Szenes_original_typewriter
 Bayonet
-Commando Knife
+Commando_Knife
 Herman_Fredrick_kisch
 Herman_Friedrick_Kisch_sword
 Hero_Of_Soviet_Union_Medal
@@ -20,7 +20,7 @@ Milk_Jug
 Morse_code_telegraph
 Nameplates
 Paratrooper_mission_insignia_made_for_Hennah_Szenes
-Partizans_File
+Partizans_Rifle
 Partizans_Flahlight
 Partizans_IED_Detonator
 Partizans_Medals

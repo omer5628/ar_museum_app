@@ -1,72 +1,87 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class ArtifactInfoPage extends StatefulWidget {
   final String artifactName;
-
   const ArtifactInfoPage({super.key, required this.artifactName});
 
   @override
-  State<ArtifactInfoPage> createState() => _ArtifactInfoPageState();
+  ArtifactInfoPageState createState() => ArtifactInfoPageState();
 }
 
-class _ArtifactInfoPageState extends State<ArtifactInfoPage> {
+class ArtifactInfoPageState extends State<ArtifactInfoPage> {
   String description = 'Loading...';
+  bool isError = false;
 
   @override
-  void initState() {
-    super.initState();
-    loadArtifactDescription();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (description == 'Loading...') {
+      _loadDescription();
+    }
   }
 
-  Future<void> loadArtifactDescription() async {
-    print("[DEBUG] Loading artifact description for: ${widget.artifactName}");
+  Future<void> _loadDescription() async {
+    final code = context.locale.languageCode;
+    final path = 'assets/translations/$code.json';
 
-    final rawData = await rootBundle.loadString('assets/information_pages/info_en.txt');
-    print("[DEBUG] Raw data loaded successfully.");
-
-    final lines = rawData.split('\n');
-
-    for (final line in lines) {
-      final trimmedLine = line.trim();
-      if (trimmedLine.isEmpty) continue;
-
-      print("[DEBUG] Checking line: $trimmedLine");
-
-      if (trimmedLine.startsWith('${widget.artifactName.trim()}:')) {
-        final index = trimmedLine.indexOf(':');
-        if (index != -1 && index < trimmedLine.length - 1) {
-          final result = trimmedLine.substring(index + 1).trim();
-          print("[DEBUG] Match found. Description: $result");
-
-          setState(() {
-            description = result;
-          });
-        }
-        return;
+    try {
+      final raw = await rootBundle.loadString(path);
+      await _parseAndSet(raw);
+    } catch (_) {
+      if (code != 'en') {
+        try {
+          final rawEn = await rootBundle.loadString('assets/translations/en.json');
+          await _parseAndSet(rawEn);
+          return;
+        } catch (_) {}
       }
+      _fail('Failed to load description.');
     }
+  }
 
-    print("[DEBUG] No match found. Showing fallback.");
+  Future<void> _parseAndSet(String raw) async {
+    final data = json.decode(raw) as Map<String, dynamic>;
+    final artifacts = data['artifacts'] as Map<String, dynamic>?;
+
+    final key = widget.artifactName.trim();
+    if (artifacts != null && artifacts.containsKey(key)) {
+      setState(() {
+        description = artifacts[key] as String;
+        isError = false;
+      });
+    } else {
+      _fail('Description not found.');
+    }
+  }
+
+  void _fail(String msg) {
     setState(() {
-      description = 'Description not found.';
+      description = msg;
+      isError = true;
     });
   }
-
-
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.artifactName),
-      ),
+        title: Text(
+          widget.artifactName,
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+      )),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16),
         child: SingleChildScrollView(
           child: Text(
             description,
-            style: const TextStyle(fontSize: 16),
+            style: TextStyle(
+              fontSize: 16,
+              color: isError ? Colors.red : Colors.black,
+            ),
           ),
         ),
       ),
