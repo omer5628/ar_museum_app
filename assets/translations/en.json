@@ -30,6 +30,7 @@
   "stepTwo": "Step two: Take a picture of a representation inside the museum (Note: Only take pictures of physical representations in the museum, not pictures of people or inside the videos)",
   "stepThree": "Step three: read the information screen about the exhibit you took",
   "gotIt": "Got it!",
+  "artifacts": {
   "Canteen": "A military canteen used by a soldier from the Jewish community in the Land of Israel.",
   "Carbine_Gun": "An American \"Carbine\" rifle, a shortened weapon intended to serve as a compact rifle during wartime. Various versions of it were used by many armies during World War II.",
   "Compass": "A military compass used by a soldier from the Jewish community in the Land of Israel.",
@@ -81,5 +82,6 @@
   "USA_Helmet": "Helmet of an American soldier from the World War II era.",
   "Warzone_Map_Scarf": "Water-resistant silk scarf featuring a map of the combat area. It belonged to Chaim Herzog, who served as an intelligence officer in the British Army.",
   "Yitzhak_Tolka_Arad_Medal": "Partisan Grade A medal awarded to Yitzhak (\"Tolka\") Arad (Rodnitsky), a partisan and resistance fighter in Lithuania."
+}
 }
 

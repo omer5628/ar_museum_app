@@ -1,66 +1,86 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class ArtifactInfoPage extends StatefulWidget {
   final String artifactName;
-
   const ArtifactInfoPage({super.key, required this.artifactName});
 
   @override
-  State<ArtifactInfoPage> createState() => _ArtifactInfoPageState();
+  ArtifactInfoPageState createState() => ArtifactInfoPageState();
 }
 
-class _ArtifactInfoPageState extends State<ArtifactInfoPage> {
+class ArtifactInfoPageState extends State<ArtifactInfoPage> {
   String description = 'Loading...';
+  bool isError = false;
 
   @override
-  void initState() {
-    super.initState();
-    loadArtifactDescription();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (description == 'Loading...') {
+      _loadDescription();
+    }
   }
 
-  Future<void> loadArtifactDescription() async {
-    final languageCode = Localizations.localeOf(context).languageCode;
-    final path = 'assets/translations/$languageCode.json';
+  Future<void> _loadDescription() async {
+    final code = context.locale.languageCode;
+    final path = 'assets/translations/$code.json';
 
     try {
-      final jsonString = await rootBundle.loadString(path);
-      final Map<String, dynamic> data = json.decode(jsonString);
-
-      // Assuming your descriptions are inside an "artifacts" key:
-      final Map<String, dynamic>? artifacts = data['artifacts'];
-      final desc = artifacts != null && artifacts.containsKey(widget.artifactName)
-          ? artifacts[widget.artifactName]
-          : 'Description not found.';
-
-      setState(() {
-        description = desc;
-      });
-    } catch (e) {
-      setState(() {
-        description = 'Failed to load description.';
-      });
+      final raw = await rootBundle.loadString(path);
+      await _parseAndSet(raw);
+    } catch (_) {
+      if (code != 'en') {
+        try {
+          final rawEn = await rootBundle.loadString('assets/translations/en.json');
+          await _parseAndSet(rawEn);
+          return;
+        } catch (_) {}
+      }
+      _fail('Failed to load description.');
     }
+  }
+
+  Future<void> _parseAndSet(String raw) async {
+    final data = json.decode(raw) as Map<String, dynamic>;
+    final artifacts = data['artifacts'] as Map<String, dynamic>?;
+
+    final key = widget.artifactName.trim();
+    if (artifacts != null && artifacts.containsKey(key)) {
+      setState(() {
+        description = artifacts[key] as String;
+        isError = false;
+      });
+    } else {
+      _fail('Description not found.');
+    }
+  }
+
+  void _fail(String msg) {
+    setState(() {
+      description = msg;
+      isError = true;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    final isRTL = Localizations.localeOf(context).languageCode == 'he';
-
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.artifactName),
-      ),
+        title: Text(
+          widget.artifactName,
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+      )),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Directionality(
-          textDirection: isRTL ? TextDirection.rtl : TextDirection.ltr,
-          child: SingleChildScrollView(
-            child: Text(
-              description,
-              style: const TextStyle(fontSize: 16),
-              textAlign: isRTL ? TextAlign.right : TextAlign.left,
+        padding: const EdgeInsets.all(16),
+        child: SingleChildScrollView(
+          child: Text(
+            description,
+            style: TextStyle(
+              fontSize: 16,
+              color: isError ? Colors.red : Colors.black,
             ),
           ),
         ),
