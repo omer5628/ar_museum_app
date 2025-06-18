@@ -12,6 +12,7 @@ class ArtifactInfoPage extends StatefulWidget {
 }
 
 class ArtifactInfoPageState extends State<ArtifactInfoPage> {
+  String label = 'Loading...';
   String description = 'Loading...';
   bool isError = false;
 
@@ -19,11 +20,11 @@ class ArtifactInfoPageState extends State<ArtifactInfoPage> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     if (description == 'Loading...') {
-      _loadDescription();
+      _loadContent();
     }
   }
 
-  Future<void> _loadDescription() async {
+  Future<void> _loadContent() async {
     final code = context.locale.languageCode;
     final path = 'assets/translations/$code.json';
 
@@ -38,49 +39,69 @@ class ArtifactInfoPageState extends State<ArtifactInfoPage> {
           return;
         } catch (_) {}
       }
-      _fail('Failed to load description.');
+      _fail('Failed to load content.');
     }
   }
 
   Future<void> _parseAndSet(String raw) async {
     final data = json.decode(raw) as Map<String, dynamic>;
     final artifacts = data['artifacts'] as Map<String, dynamic>?;
+    final labels = data['labels'] as Map<String, dynamic>?;
 
     final key = widget.artifactName.trim();
-    if (artifacts != null && artifacts.containsKey(key)) {
-      setState(() {
-        description = artifacts[key] as String;
-        isError = false;
-      });
-    } else {
-      _fail('Description not found.');
-    }
+
+    setState(() {
+      description = artifacts?[key] as String? ?? 'Description not found.';
+      label = labels?[key] as String? ?? widget.artifactName;
+      isError = !(artifacts?.containsKey(key) ?? false);
+    });
   }
 
   void _fail(String msg) {
     setState(() {
       description = msg;
+      label = widget.artifactName;
       isError = true;
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.deepPurple,
+        elevation: 2,
         title: Text(
-          widget.artifactName,
+          label,
           maxLines: 2,
           overflow: TextOverflow.ellipsis,
-      )),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
+          style: theme.textTheme.titleLarge?.copyWith(
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+      ),
+      body: Container(
+        color: Colors.grey[50],
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
         child: SingleChildScrollView(
-          child: Text(
-            description,
-            style: TextStyle(
-              fontSize: 16,
-              color: isError ? Colors.red : Colors.black,
+          physics: const BouncingScrollPhysics(),
+          child: Card(
+            elevation: 4,
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            shadowColor: Colors.deepPurple.withOpacity(0.3),
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: Text(
+                description,
+                style: TextStyle(
+                  fontSize: 17,
+                  height: 1.5,
+                  color: isError ? Colors.redAccent : Colors.black87,
+                ),
+              ),
             ),
           ),
         ),
