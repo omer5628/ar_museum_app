@@ -10,9 +10,9 @@ Future<void> main() async {
 
   runApp(
     EasyLocalization(
-      supportedLocales: const [Locale('en'), Locale('he'), Locale('ru')],
+      supportedLocales: const [Locale('he'), Locale('en'), Locale('ru')],
       path: 'assets/translations',
-      fallbackLocale: const Locale('en'),
+      fallbackLocale: const Locale('he'),
       child: ChangeNotifierProvider(
         create: (_) => FontSizeNotifier(),
         child: const MyApp(),
