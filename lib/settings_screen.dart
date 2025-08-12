@@ -80,10 +80,11 @@ class SettingsScreen extends StatelessWidget {
                   constraints: const BoxConstraints(maxWidth: 150),
                   child: DropdownButtonFormField<String>(
                     isDense: true,
-                    value:
-                        context.read<FontSizeNotifier>().scale == 1.3
-                            ? 'Large'
-                            : 'Medium',
+                    value: context.read<FontSizeNotifier>().scale == 1.3
+                      ? 'Large'
+                      : context.read<FontSizeNotifier>().scale == 0.8
+                          ? 'Small'
+                          : 'Medium',
                     decoration: InputDecoration(
                       contentPadding: const EdgeInsets.symmetric(
                         vertical: 8,
@@ -94,6 +95,7 @@ class SettingsScreen extends StatelessWidget {
                       ),
                     ),
                     items: const [
+                      DropdownMenuItem(value: 'Small', child: Text('Small')),
                       DropdownMenuItem(value: 'Medium', child: Text('Medium')),
                       DropdownMenuItem(value: 'Large', child: Text('Large')),
                     ],
@@ -101,6 +103,8 @@ class SettingsScreen extends StatelessWidget {
                       final provider = context.read<FontSizeNotifier>();
                       if (v == 'Large')
                         provider.setLarge();
+                      else if (v == 'Small')
+                        provider.setSmall();
                       else
                         provider.setMedium();
                     },
