@@ -62,7 +62,7 @@ class StartScreen extends StatelessWidget {
                       ),
                     ),
 
-                    const Spacer(flex: 5), // pushes buttons lower
+                    const Spacer(flex: 15), // pushes buttons lower
                     // ---- Scanner ----
                     MenuButton(
                       label: tr('scanner'),
