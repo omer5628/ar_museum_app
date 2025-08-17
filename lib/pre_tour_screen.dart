@@ -20,8 +20,9 @@ class _PreTourScreenState extends State<PreTourScreen> {
         VideoPlayerController.asset('assets/videos/intro.mp4')
           ..setLooping(true)
           ..initialize().then((_) {
-            setState(() {}); // לעדכן כשמוכן
-            _controller.play(); // מתחיל אוטומטית
+            setState(() {});
+            _controller.setVolume(1.0); // ← הוסף שורה זו
+            _controller.play();
           });
   }
 
