@@ -26,36 +26,35 @@ class _AppScreenState extends State<AppScreen> {
   void _showIntroDialog() {
     showDialog(
       context: context,
-      builder:
-          (dialogContext) => AlertDialog(
-            title: Text('How does it work?'),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Step one: Press the scanner button',
-                  style: const TextStyle(fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Step two: Take a picture of a representation inside the museum (Note: Only take pictures of physical representations in the museum, not pictures of people or inside the videos)',
-                  style: const TextStyle(fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Step three: Touch the information screen about the exhibit you took',
-                  style: const TextStyle(fontWeight: FontWeight.bold),
-                ),
-              ],
+      builder: (dialogContext) => AlertDialog(
+        title: Text('How does it work?'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Step one: Press the scanner button',
+              style: const TextStyle(fontWeight: FontWeight.bold),
             ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(dialogContext).pop(),
-                child: Text('Got it!'),
-              ),
-            ],
+            const SizedBox(height: 8),
+            Text(
+              'Step two: Take a picture of a representation inside the museum (Note: Only take pictures of physical representations in the museum, not pictures of people or inside the videos)',
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Step three: Touch the information screen about the exhibit you took',
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(),
+            child: Text('Got it!'),
           ),
+        ],
+      ),
     );
   }
 
@@ -98,18 +97,8 @@ class _AppScreenState extends State<AppScreen> {
             ),
           ),
           Positioned.fill(
-            child: Center(
-              child: Opacity(
-                opacity: 0.15,
-                child: Image.asset(
-                  'assets/images/logo2.png',
-                  fit: BoxFit.contain,
-                  width: MediaQuery.of(context).size.width * 0.8,
-                ),
-              ),
-            ),
+            child: SafeArea(child: bodyWidget),
           ),
-          Positioned.fill(child: SafeArea(child: bodyWidget)),
         ],
       ),
     );

@@ -83,6 +83,8 @@ class SettingsScreen extends StatelessWidget {
                     value:
                         context.read<FontSizeNotifier>().scale == 1.3
                             ? 'Large'
+                            : context.read<FontSizeNotifier>().scale == 0.8
+                            ? 'Small'
                             : 'Medium',
                     decoration: InputDecoration(
                       contentPadding: const EdgeInsets.symmetric(
@@ -94,16 +96,18 @@ class SettingsScreen extends StatelessWidget {
                       ),
                     ),
                     items: const [
+                      DropdownMenuItem(value: 'Small', child: Text('Small')),
                       DropdownMenuItem(value: 'Medium', child: Text('Medium')),
                       DropdownMenuItem(value: 'Large', child: Text('Large')),
                     ],
                     onChanged: (v) {
                       final provider = context.read<FontSizeNotifier>();
-                      if (v == 'Large') {
+                      if (v == 'Large')
                         provider.setLarge();
-                      } else {
+                      else if (v == 'Small')
+                        provider.setSmall();
+                      else
                         provider.setMedium();
-                      }
                     },
                   ),
                 ),
