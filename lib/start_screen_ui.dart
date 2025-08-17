@@ -20,13 +20,13 @@ class StartScreen extends StatelessWidget {
             Positioned(
               top:
                   constraints.maxHeight *
-                  0.18, // slightly lower to leave room for title
+                  0.15, // slightly lower to leave room for title
               child: Opacity(
                 opacity: 0.25,
                 child: Image.asset(
                   'assets/images/logo2.png',
                   fit: BoxFit.contain,
-                  width: constraints.maxWidth * 0.8,
+                  width: constraints.maxWidth * 0.85,
                 ),
               ),
             ),
@@ -40,7 +40,7 @@ class StartScreen extends StatelessWidget {
                 ),
                 child: Column(
                   children: [
-                    const SizedBox(height: 40), // headline higher
+                    const SizedBox(height: 35), // headline higher
 
                     Text(
                       tr('appTitle'),
@@ -62,7 +62,7 @@ class StartScreen extends StatelessWidget {
                       ),
                     ),
 
-                    const Spacer(flex: 3), // pushes buttons lower
+                    const Spacer(flex: 5), // pushes buttons lower
                     // ---- Scanner ----
                     MenuButton(
                       label: tr('scanner'),
