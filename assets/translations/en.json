@@ -1,5 +1,11 @@
 {
-  "appTitle": "Jewish Fighter in WWII Museum",
+  "appTitle": "Jewish Soldier Museum",
+  "Quiz": "Quiz",
+  "questionXofY": "Question {0} of {1}",
+  "yourScore": "Your score",
+  "outOf": "out of",
+  "backHome": "Back to home",
+  "playAgain": "Play again",
   "scanner": "Scanner",
   "preTour": "Pre Tour",
   "settings": "Settings",
@@ -76,13 +82,8 @@
   "Sten_Submachinegun": "A British submachine gun called the Sten, whose production began at the outbreak of World War II. It was mainly used by Britain but was also produced in large quantities in other countries such as Canada and Israel. It is considered one of the most reliable weapons that was easy to manufacture and operate.",
   "USA_Helmet": "Helmet of an American soldier from the World War II era.",
   "Warzone_Map_Scarf": "Water-resistant silk scarf featuring a map of the combat area. It belonged to Chaim Herzog, who served as an intelligence officer in the British Army.",
-  "Yitzhak_Tolka_Arad_Medal": "Partisan Grade A medal awarded to Yitzhak (\"Tolka\") Arad (Rodnitsky), a partisan and resistance fighter in Lithuania.",
-  "Quiz": "Quiz",
-  "questionXofY": "Question {0} of {1}",
-  "yourScore": "Your score",
-  "outOf": "out of",
-  "backHome": "Back to home",
-  "playAgain": "Play again"
+  "Yitzhak_Tolka_Arad_Medal": "Partisan Grade A medal awarded to Yitzhak (\"Tolka\") Arad (Rodnitsky), a partisan and resistance fighter in Lithuania."
+  
   },
   "labels": {
   "Canteen": "Canteen",
