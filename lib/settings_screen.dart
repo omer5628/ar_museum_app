@@ -99,10 +99,11 @@ class SettingsScreen extends StatelessWidget {
                     ],
                     onChanged: (v) {
                       final provider = context.read<FontSizeNotifier>();
-                      if (v == 'Large')
+                      if (v == 'Large') {
                         provider.setLarge();
-                      else
+                      } else {
                         provider.setMedium();
+                      }
                     },
                   ),
                 ),

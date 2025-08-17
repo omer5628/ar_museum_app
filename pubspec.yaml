@@ -84,6 +84,9 @@ flutter:
     - assets/information_pages/info_he.txt
     - assets/information_pages/info_ru.txt
     - assets/videos/intro.mp4
+    - assets/quiz/quiz_en.json
+    - assets/quiz/quiz_he.json
+    - assets/quiz/quiz_ru.json
 
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg

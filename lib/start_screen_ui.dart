@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:ar_museum_app/menu_buttons.dart';
 import 'package:ar_museum_app/pre_tour_screen.dart';
+import 'package:ar_museum_app/quiz/quiz_screen.dart';
 
 class StartScreen extends StatelessWidget {
   const StartScreen({super.key, required this.onSelectScreen});
@@ -58,7 +59,17 @@ class StartScreen extends StatelessWidget {
                       ),
                     ),
               ),
-
+              // quiz
+              MenuButton(
+                label: tr('Quiz'),
+                icon: Icons.quiz_outlined,
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => QuizScreen()),
+                  );
+                },
+              ),
               // ---- כפתור Settings ----
               MenuButton(
                 label: tr('settings'),
