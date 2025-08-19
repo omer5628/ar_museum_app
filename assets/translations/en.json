@@ -31,6 +31,10 @@
   "stepOne": "Step one: Press the scanner button",
   "stepTwo": "Step two: Take a picture of a representation inside the museum (Note: Only take pictures of physical representations in the museum, not pictures of people or inside the videos)",
   "stepThree": "Step three: read the information screen about the exhibit you took",
+  "next": "Next",
+  "resultTryAgain": "Try again",
+  "resultNice": "Nice!",
+  "resultWellDone": "Well done!",
   "artifacts": {
   "Canteen": "A military canteen used by a soldier from the Jewish community in the Land of Israel.",
   "Carbine_Gun": "An American \"Carbine\" rifle, a shortened weapon intended to serve as a compact rifle during wartime. Various versions of it were used by many armies during World War II.",
@@ -138,4 +142,5 @@
   "Warzone_Map_Scarf": "Warzone Map Scarf",
   "Yitzhak_Tolka_Arad_Medal": "Yitzhak Tolka Arad Medal"
   }
+  
 }

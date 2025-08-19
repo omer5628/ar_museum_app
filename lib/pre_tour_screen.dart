@@ -21,7 +21,7 @@ class _PreTourScreenState extends State<PreTourScreen> {
           ..setLooping(true)
           ..initialize().then((_) {
             setState(() {});
-            _controller.setVolume(1.0); // ← הוסף שורה זו
+            _controller.setVolume(1.0);
             _controller.play();
           });
   }
@@ -41,6 +41,12 @@ class _PreTourScreenState extends State<PreTourScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final progressColors = VideoProgressColors(
+      playedColor: Colors.purpleAccent,
+      backgroundColor: Colors.white24,
+      bufferedColor: Colors.white38,
+    );
+
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
@@ -50,58 +56,55 @@ class _PreTourScreenState extends State<PreTourScreen> {
       body: Center(
         child:
             _controller.value.isInitialized
-                ? Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    // 1. הווידאו עצמו
-                    GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          _controller.value.isPlaying
-                              ? _controller.pause()
-                              : _controller.play();
-                        });
-                      },
-                      child: AspectRatio(
-                        aspectRatio: _controller.value.aspectRatio,
-                        child: VideoPlayer(_controller),
-                      ),
-                    ),
-
-                    const SizedBox(height: 12),
-
-                    // 2. שורה של זמן נוכחי / כולל
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          _formatDuration(_controller.value.position),
-                          style: const TextStyle(color: Colors.white),
-                        ),
-                        const SizedBox(width: 8),
-                        SizedBox(
-                          width: 200,
-                          child: VideoProgressIndicator(
-                            _controller,
-                            allowScrubbing: true,
-                            colors: VideoProgressColors(
-                              playedColor: Colors.purpleAccent,
-                              backgroundColor: Colors.white24,
-                              bufferedColor: Colors.white38,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          _formatDuration(_controller.value.duration),
-                          style: const TextStyle(color: Colors.white),
-                        ),
-                      ],
-                    ),
-                  ],
+                ? GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      _controller.value.isPlaying
+                          ? _controller.pause()
+                          : _controller.play();
+                    });
+                  },
+                  child: AspectRatio(
+                    aspectRatio: _controller.value.aspectRatio,
+                    child: VideoPlayer(_controller),
+                  ),
                 )
                 : const CircularProgressIndicator(),
       ),
+
+      // ⬇️ שורת ההתקדמות ירדה לכאן, עטופה ב-SafeArea כדי לא להיחתך ע"י פס המערכת
+      bottomNavigationBar:
+          _controller.value.isInitialized
+              ? SafeArea(
+                minimum: const EdgeInsets.only(
+                  left: 16,
+                  right: 16,
+                  bottom: 12,
+                  top: 8,
+                ),
+                child: Row(
+                  children: [
+                    Text(
+                      _formatDuration(_controller.value.position),
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: VideoProgressIndicator(
+                        _controller,
+                        allowScrubbing: true,
+                        colors: progressColors,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      _formatDuration(_controller.value.duration),
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                  ],
+                ),
+              )
+              : null,
     );
   }
 }
