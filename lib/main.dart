@@ -3,11 +3,16 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:provider/provider.dart';
 import 'package:ar_museum_app/providers/font_size_provider.dart';
 import 'package:ar_museum_app/app_screen.dart';
+import 'package:flutter/services.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await EasyLocalization.ensureInitialized();
 
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    // אם תרצה גם הפוך: DeviceOrientation.portraitDown,
+  ]);
   runApp(
     EasyLocalization(
       supportedLocales: const [Locale('he'), Locale('en'), Locale('ru')],
