@@ -2,6 +2,7 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:ar_museum_app/utils/tflite_helper.dart';
 import 'package:ar_museum_app/artifact_info_page.dart';
+import 'package:ar_museum_app/Unknown_Artifact_Page.dart';
 
 class ScannerScreen extends StatefulWidget {
   final VoidCallback onBack;
@@ -60,11 +61,18 @@ class _ScannerScreenState extends State<ScannerScreen> {
     final prediction = await TFLiteHelper.runModelOnImage(image.path);
     print('Prediction: $prediction');
 
-    if (prediction.isNotEmpty && mounted) {
+    if (prediction != "Unknown" && mounted) {
       Navigator.push(
         context,
         MaterialPageRoute(
           builder: (_) => ArtifactInfoPage(artifactName: prediction),
+        ),
+      );
+    } else if (mounted) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => const UnknownArtifactPage(),
         ),
       );
     }

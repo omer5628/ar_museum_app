@@ -35,6 +35,7 @@
   "resultTryAgain": "Try again",
   "resultNice": "Nice!",
   "resultWellDone": "Well done!",
+  "unable_to_identify": "Unable to identify the artifact, please try again.",
   "artifacts": {
   "Canteen": "A military canteen used by a soldier from the Jewish community in the Land of Israel.",
   "Carbine_Gun": "An American \"Carbine\" rifle, a shortened weapon intended to serve as a compact rifle during wartime. Various versions of it were used by many armies during World War II.",

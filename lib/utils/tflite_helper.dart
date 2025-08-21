@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:typed_data';
 import 'package:flutter/services.dart';
 import 'package:tflite_flutter/tflite_flutter.dart';
 import 'package:image/image.dart' as img;
@@ -25,6 +24,7 @@ class TFLiteHelper {
           .split('\n')
           .where((label) => label.trim().isNotEmpty)
           .toList();
+      _debugPrintModelIO();
       print("Model and labels loaded successfully.");
     } catch (e) {
       print("Failed to load model or labels: $e");
@@ -32,61 +32,72 @@ class TFLiteHelper {
     }
   }
 
-  static Future<String> runModelOnImage(String imagePath) async {
-    if (_interpreter == null) {
-      throw Exception("Interpreter not loaded. Call loadModel() first.");
-    }
-
-    try {
-      final imageFile = File(imagePath);
-      if (!await imageFile.exists()) {
-        throw Exception("Image file not found at path: $imagePath");
-      }
-
-      final rawBytes = await imageFile.readAsBytes();
-      final rawImage = img.decodeImage(rawBytes);
-      if (rawImage == null) {
-        throw Exception("Failed to decode image");
-      }
-
-      final resizedImage =
-          img.copyResize(rawImage, width: _inputSize, height: _inputSize);
-      final input = _imageToByteListFloat32(resizedImage);
-
-      final output = List.filled(_labels.length, 0.0).reshape([1, _labels.length]);
-      _interpreter!.run(input, output);
-
-      final scores = List<double>.from(output[0]);
-      final maxScore = scores.reduce((a, b) => a > b ? a : b);
-      final predictedIndex = scores.indexOf(maxScore);
-
-      return _labels[predictedIndex];
-    } catch (e) {
-      print("Model inference failed: $e");
-      rethrow;
-    }
+static Future<String> runModelOnImage(String imagePath) async {
+  if (_interpreter == null) {
+    throw Exception("Interpreter not loaded. Call loadModel() first.");
   }
 
-  static Uint8List _imageToByteListFloat32(img.Image image) {
-    final Float32List floatList = Float32List(_inputSize * _inputSize * _numChannels);
-    int index = 0;
+  try {
+    final imageFile = File(imagePath);
+    if (!await imageFile.exists()) {
+      throw Exception("Image file not found at path: $imagePath");
+    }
 
-    for (int y = 0; y < _inputSize; y++) {
-      for (int x = 0; x < _inputSize; x++) {
-        final pixel = image.getPixel(x, y);
-        floatList[index++] = pixel.r / 255.0;
-        floatList[index++] = pixel.g / 255.0;
-        floatList[index++] = pixel.b / 255.0;
+    final rawBytes = await imageFile.readAsBytes();
+    final rawImage = img.decodeImage(rawBytes);
+    if (rawImage == null) {
+      throw Exception("Failed to decode image");
+    }
+
+    final resizedImage =
+        img.copyResize(rawImage, width: _inputSize, height: _inputSize);
+
+    final input = _imageToInputRaw255(resizedImage);
+
+    final output = List.generate(1, (_) => List.filled(_labels.length, 0.0));
+    _interpreter!.run(input, output);
+
+    final scores = List<double>.from(output[0]);
+    final maxScore = scores.reduce((a, b) => a > b ? a : b);
+    final predictedIndex = scores.indexOf(maxScore);
+    if (maxScore < 0.1) { // כאן
+      return "Unknown";
+    }
+    return _labels[predictedIndex];
+  } catch (e) {
+    print("Model inference failed: $e");
+    rethrow;
+  }
+}
+
+
+  // 1) Replace your builder with RAW (0..255) input — no normalization
+    static List _imageToInputRaw255(img.Image image) {
+      final input = List.generate(1, (_) =>
+          List.generate(_inputSize, (_) =>
+              List.generate(_inputSize, (_) => List.filled(_numChannels, 0.0))));
+
+      for (int y = 0; y < _inputSize; y++) {
+        for (int x = 0; x < _inputSize; x++) {
+          final p = image.getPixel(x, y);
+          input[0][y][x][0] = p.r.toDouble(); // 0..255
+          input[0][y][x][1] = p.g.toDouble();
+          input[0][y][x][2] = p.b.toDouble();
+        }
+      }
+      return input;
+    }
+
+    // 2) (Optional but recommended) After loading, verify IO matches labels
+    static void _debugPrintModelIO() {
+      final it = _interpreter!;
+      final inT = it.getInputTensor(0);
+      final outT = it.getOutputTensor(0);
+      print('TFLite input  : shape=${inT.shape} type=${inT.type}');
+      print('TFLite output : shape=${outT.shape} type=${outT.type}');
+      if (outT.shape.last != _labels.length) {
+        throw Exception('Labels (${_labels.length}) != model outputs (${outT.shape.last})');
       }
     }
 
-    return floatList.buffer.asUint8List();
-  }
-
-  static void dispose() {
-    _interpreter?.close();
-    _interpreter = null;
-    _labels.clear();
-    print("Interpreter and labels disposed.");
-  }
 }
