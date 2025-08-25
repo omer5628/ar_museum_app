@@ -10,7 +10,7 @@ class UnknownArtifactPage extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.deepPurple,
         title: Text(
-          "unable_to_identify".tr(), // Multilingual text
+          "unable_to_identify_h".tr(), // Multilingual text
           style: const TextStyle(color: Colors.white),
         ),
       ),

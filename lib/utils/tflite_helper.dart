@@ -49,8 +49,7 @@ static Future<String> runModelOnImage(String imagePath) async {
       throw Exception("Failed to decode image");
     }
 
-    final resizedImage =
-        img.copyResize(rawImage, width: _inputSize, height: _inputSize);
+    final resizedImage = img.copyResize(rawImage, width: _inputSize, height: _inputSize);
 
     final input = _imageToInputRaw255(resizedImage);
 
@@ -60,7 +59,7 @@ static Future<String> runModelOnImage(String imagePath) async {
     final scores = List<double>.from(output[0]);
     final maxScore = scores.reduce((a, b) => a > b ? a : b);
     final predictedIndex = scores.indexOf(maxScore);
-    if (maxScore < 0.1) { // כאן
+    if (maxScore < 0.65) { // כאן
       return "Unknown";
     }
     return _labels[predictedIndex];
@@ -80,7 +79,7 @@ static Future<String> runModelOnImage(String imagePath) async {
       for (int y = 0; y < _inputSize; y++) {
         for (int x = 0; x < _inputSize; x++) {
           final p = image.getPixel(x, y);
-          input[0][y][x][0] = p.r.toDouble(); // 0..255
+          input[0][y][x][0] = p.r.toDouble(); 
           input[0][y][x][1] = p.g.toDouble();
           input[0][y][x][2] = p.b.toDouble();
         }
