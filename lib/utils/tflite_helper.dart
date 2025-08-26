@@ -59,7 +59,7 @@ static Future<String> runModelOnImage(String imagePath) async {
     final scores = List<double>.from(output[0]);
     final maxScore = scores.reduce((a, b) => a > b ? a : b);
     final predictedIndex = scores.indexOf(maxScore);
-    if (maxScore < 0.65) { // כאן
+    if (maxScore < 0.57) { // כאן
       return "Unknown";
     }
     return _labels[predictedIndex];
